@@ -116,7 +116,7 @@ func (manager *BotManager) BosyuNotion(gemuboId string) {
 
 	embed := &discordgo.MessageEmbed{
 		Title:       msgTitle,
-		Description: msgContent,
+		Description: "",
 		Color:       0x00F1AA,
 		Thumbnail: &discordgo.MessageEmbedThumbnail{
 			URL: manager.BotUserInfo.AvatarURL("20"),
@@ -126,6 +126,7 @@ func (manager *BotManager) BosyuNotion(gemuboId string) {
 	embes = append(embes, embed)
 
 	options := &discordgo.MessageSend{
+		Content: msgContent,
 		Reference: &discordgo.MessageReference{
 			MessageID: gmsg.MessgeId,
 		},
@@ -300,7 +301,6 @@ func onHelpCommand(arg *CommandArg, manager *BotManager) {
 			msg += fmt.Sprintf("**%s**\n\tー\t%s\n", command.Name, command.summary)
 		}
 		msg += "各コマンドの詳細は「!gemubo help <コマンド名>」で確認できます\n"
-
 		sendMessage(arg.s, arg.m.ChannelID, msg)
 		return
 	}
@@ -515,7 +515,16 @@ func onBosyuCommand(arg *CommandArg, manager *BotManager) {
 		}
 
 		embed := gemubo.MakeEmbedBosyuMessage(gemuboMsg)
-		dmsg, err := arg.s.ChannelMessageSendEmbed(arg.m.ChannelID, embed)
+		embeds := make([]*discordgo.MessageEmbed, 0)
+		embeds = append(embeds, embed)
+
+		content := "@everyone\n"
+		msgObj := &discordgo.MessageSend{
+			Content: content,
+			Embeds:  embeds,
+		}
+
+		dmsg, err := arg.s.ChannelMessageSendComplex(arg.m.ChannelID, msgObj)
 
 		if err != nil {
 			log.Println("Error sending embed message")

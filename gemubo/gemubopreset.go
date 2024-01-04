@@ -142,6 +142,8 @@ func MakeEmbedBosyuMessage(gmsg *GemuboMessage) *discordgo.MessageEmbed {
 			URL: gmsg.ImageURL,
 		},
 	}
+	embeds := []*discordgo.MessageEmbed{embed}
+	embeds = append(embeds, embed)
 
 	if embed.Title == "" {
 		embed.Title = fmt.Sprintf("%sがゲムボ！", gmsg.Author.Username)
